@@ -1,0 +1,7 @@
+{
+	"CharacterPaths":["res://example/fighter/Fighter.casp"],
+	"StagePaths":["res://example/stage/Stage.tscn"],
+	
+	"GameTitle":"Empty Castagne Project",
+	"GameVersion":"v1.0",
+}

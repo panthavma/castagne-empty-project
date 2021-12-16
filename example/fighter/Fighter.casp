@@ -1,0 +1,74 @@
+# We start with a character block, that contains metadata that will be read first.
+:Character:
+	# The name is displayed in the character select screen
+	Name: Default Fighter
+	
+	# The skeleton is another .casp file that is going to be used as a base.
+	Skeleton: res://castagne/Base.casp
+	
+	# This is for the graphical side, it will instance the model.
+	Model: res://example/fighter/FighterModel.tscn
+	AnimPlayerPath: AnimationPlayer
+
+# The variables block allows us to hold variables for later use.
+:Variables:
+	ExempleVariable: 0
+
+
+
+
+
+# Finally, the states themselves. Most of the groundwork is done in
+# the Base.casp skeleton.
+
+# 5B is a grounded attack. It's a pretty normal attack as far as attacks go.
+:5B:
+	Type(GroundedStandingAttack)
+	Hurtbox(-5000, 5000, 0, 20000)
+	Set(Recovery, 35)
+	F8-10:
+		Attack(1000, 25, 22)
+		AttackProration(950, 900, 980, 950)
+		AttackMomentum(500, 0, 200, -800)
+		Hitbox(0, 16000, 6500, 20500)
+		Set(CanGatling, 1)
+	endif
+	Anim(5B)
+
+# 2B is a crouching attack, that is also a low launcher.
+:2B:
+	Type(GroundedCrouchingAttack)
+	Hurtbox(-5000, 5000, 0, 15000)
+	Set(Recovery, 36)
+	
+	# Move forward a bit to get a nice extension
+	F1-17:
+		Move(300, 0)
+	endif
+	
+	F11-13:
+		Attack(800, 25, 20)
+		AttackProration(950, 900, 980, 950)
+		AttackMomentum(200, 700)
+		AttackFlag(Launcher)
+		AttackFlag(Low)
+		Hitbox(0, 20000, 0, 10000)
+		Set(CanGatling, 1)
+	endif
+	Anim(2B)
+
+
+# j5B is an air attack, and also an overhead.
+:j5B:
+	Type(AirborneAttack)
+	Hurtbox(-5000, 5000, 0, 20000)
+	Set(Recovery, 31)
+	F10-13:
+		Attack(800, 30, 17)
+		AttackProration(950, 900, 980, 950)
+		AttackMomentum(200, 0, 600, 400)
+		AttackFlag(Overhead)
+		Hitbox(0, 16000, 1500, 20500)
+		Set(CanGatling, 1)
+	endif
+	Anim(j5B)
