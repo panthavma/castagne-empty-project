@@ -1,0 +1,45 @@
+:Character:
+	Name: Empty Fighter
+	
+	Skeleton: res://castagne/Base.casp
+	
+	Model: res://castagne/example/fighter/CastagneurModel.tscn
+	AnimPlayerPath: AnimationPlayer
+	
+	Palette1:res://castagne/example/fighter/model/Pal1.tres
+	Palette2:res://castagne/example/fighter/model/Pal2.tres
+
+
+# The variables block allows us to hold data for later use.
+:Variables:
+	# Character Specific
+	HPMax: 10000
+	
+	# Animation presets. These are used by Base.casp
+	ANIM_KNOCKDOWN: Down
+	ANIM_HITSTUN_AIR: Hit.Air
+	ANIM_HITSTUN_STAND: Hit.Stand
+	ANIM_HITSTUN_CROUCH: Hit.Crouch
+	ANIM_BLOCK_STAND: Block.Stand
+	ANIM_BLOCK_CROUCH: Block.Crouch
+	ANIM_BLOCK_AIR: Block.Air
+	ANIM_TECH_INPLACE: Landing
+	ANIM_TECH_FORWARD: Landing
+	ANIM_TECH_BACK: Landing
+	ANIM_TECH_SOFT: Landing
+	ANIM_TECH_AIR: Landing
+	ANIM_STAND: Stand
+	ANIM_CROUCH: Crouch
+	ANIM_WALKF: WalkF
+	ANIM_WALKB: WalkB
+	ANIM_JUMPSQUAT: Landing
+	ANIM_LANDING: Landing
+	ANIM_JUMPN: Air
+	ANIM_JUMPF: Air
+	ANIM_JUMPB: Air
+	ANIM_AIRIDLE: Air
+
+:Init:
+	Transition(Idle)
+
+
