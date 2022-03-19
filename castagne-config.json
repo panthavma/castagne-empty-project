@@ -1,3 +1,1 @@
-{
-	"CharacterPaths":["res://castagne/example/fighter/Castagneur.casp", "res://fighters/Fighter.casp"],
-}
+{"CharacterPaths":["res://castagne/example/fighter/Castagneur.casp","res://fighters/Fighter.casp"],"GameTitle":"Empty Castagne Project"}

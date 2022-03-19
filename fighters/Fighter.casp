@@ -14,8 +14,10 @@
 :Variables:
 	# Character Specific
 	HPMax: 10000
+
 	
 	# Animation presets. These are used by Base.casp
+	USE_STANDARD_ANIMS: 1
 	ANIM_KNOCKDOWN: Down
 	ANIM_HITSTUN_AIR: Hit.Air
 	ANIM_HITSTUN_STAND: Hit.Stand
@@ -38,8 +40,3 @@
 	ANIM_JUMPF: Air
 	ANIM_JUMPB: Air
 	ANIM_AIRIDLE: Air
-
-:Init:
-	Transition(Idle)
-
-
