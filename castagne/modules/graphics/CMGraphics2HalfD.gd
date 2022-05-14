@@ -19,7 +19,7 @@ func ModuleSetup():
 		"Description": "Moves the model independant of facing.",
 		"Arguments":["Horizontal Move", "(Optional) Vertical Move"]
 	})
-	RegisterFunction("ModelSwitchFacing", [], null, {
+	RegisterFunction("ModelSwitchFacing", [0], null, {
 		"Description": "Changes the model's facing.",
 		"Arguments":[]
 	})
@@ -46,13 +46,15 @@ func ModuleSetup():
 func BattleInit(state, data, battleInitData):
 	var camera = InitCamera(state, data, battleInitData)
 	engine.add_child(camera)
+	engine.graphicsModule = self
 	
 	POSITION_SCALE = engine.POSITION_SCALE
 	
 	data["InstancedData"]["Camera"] = camera
+	lastRegisteredCamera = camera
 	POSITION_SCALE = engine.POSITION_SCALE
 
-
+var lastRegisteredCamera = null
 var cameraOffset = Vector3(0.0, 2.0, 6.2)
 func UpdateGraphics(state, data):
 	var camera = data["InstancedData"]["Camera"]
@@ -105,7 +107,7 @@ func SetPalette(eState, data, paletteID):
 		return
 	# :TODO:Panthavma:20220217:Do it better, maybe simply charge different models ?
 	var palettePath = fighterMetadata[paletteKey]
-	var paletteMaterial = load(palettePath)
+	var paletteMaterial = Castagne.Loader.Load(palettePath)
 	var modelRoot = data["InstancedData"]["Entities"][eState["EID"]]["Model"]
 	if(modelRoot == null):
 		return
@@ -147,18 +149,21 @@ func CreateSprite(args, eState, data):
 	var spritesY = ArgInt(args, eState, 2, 1)
 	var pixelSize = ArgInt(args, eState, 3, 100)/10000.0
 	
-	_EnsureRootIsSet(eState["EID"], data)
-	var sprite = Sprite3D.new()
-	data["InstancedData"]["Entities"][eState["EID"]]["Root"].add_child(sprite)
-	data["InstancedData"]["Entities"][eState["EID"]]["Sprite"] = sprite
-	# TODO set it up
-	sprite.set_texture(load(spritesheetPath))
+	var spritesheet = Castagne.Loader.Load(spritesheetPath)
+	var sprite = _CreateSprite_Instance(args, eState, data)
+	
+	sprite.set_texture(spritesheet)
 	sprite.set_hframes(spritesX)
 	sprite.set_vframes(spritesY)
 	sprite.set_pixel_size(pixelSize)
 	sprite.set_centered(false)
-	#sprite.set_billboard_mode(BILLBOARD_ENABLED)
-	#sprite.set_billboard_mode(SpatialMaterial.BILLBOARD_FIXED_Y)
+	
+	_EnsureRootIsSet(eState["EID"], data)
+	data["InstancedData"]["Entities"][eState["EID"]]["Root"].add_child(sprite)
+	data["InstancedData"]["Entities"][eState["EID"]]["Sprite"] = sprite
+	
+func _CreateSprite_Instance(_args, _eState, _data):
+	return Sprite3D.new()
 
 func SpriteOrigin(args, eState, data):
 	var originX = ArgInt(args, eState, 0)
@@ -172,3 +177,12 @@ func _EnsureRootIsSet(eid, data):
 		var root = Spatial.new()
 		data["InstancedData"]["Entities"][eid]["Root"] = root
 		data["Engine"].add_child(root)
+
+
+func IngameToWorldPos(ingamePositionX, ingamePositionY, ingamePositionZ = 0):
+	return Vector3(ingamePositionX, ingamePositionY, ingamePositionZ) * POSITION_SCALE
+
+func TranslateIngamePosToScreen(ingamePositionX, ingamePositionY, ingamePositionZ = 0):
+	if(lastRegisteredCamera != null):
+		return lastRegisteredCamera.unproject_position(IngameToWorldPos(ingamePositionX, ingamePositionY, ingamePositionZ))
+	return Vector2(0,0)

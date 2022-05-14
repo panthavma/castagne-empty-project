@@ -1,17 +1,6 @@
 extends Node
 
 
-# :TODO:Panthavma:20211230:Register Variables & Flags
-# :TODO:Panthavma:20211230:Register Module
-# :TODO:Panthavma:20211230:Rename to tool or module
-# :TODO:Panthavma:20211230:More flexible tool loading
-# :TODO:Panthavma:20211230:Make individual function interface more flexible but also parallelizable
-# :TODO:Panthavma:20211230:Review the different callbacks
-# :TODO:Panthavma:20211230:Implement the init callback and cycle
-# :TODO:Panthavma:20211230:Ability to document module, functions, variables, and flags.
-# :TODO:Panthavma:20211230:Move some functions to graphics, presentation, or fighting game
-# :TODO:Panthavma:20211230:Control the internal loop a bit more (different castagne engine ? or through callbacks ?)
-# :TODO:Panthavma:20211230:Clear module subclass sandbox
 # :TODO:Panthavma:20220124:Allow only some modules to be called for slight perf boost ?
 
 
@@ -181,6 +170,7 @@ func _RegisterVariableCommon(variableName, defaultValue, flags, documentation, e
 func RegisterFunction(functionName, nbArguments, flags = null, documentation = null):
 	var parseFunc = null
 	var actionFunc = null
+	var gizmoFunc = null
 	
 	if(flags == null):
 		flags = []
@@ -202,6 +192,9 @@ func RegisterFunction(functionName, nbArguments, flags = null, documentation = n
 	if(has_method(functionName)):
 		actionFunc = funcref(self, functionName)
 	
+	if(has_method("Gizmo"+functionName)):
+		gizmoFunc = funcref(self, "Gizmo"+functionName)
+	
 	if(parseFunc == null and actionFunc == null):
 		Castagne.Error(functionName+" : Parse function or Action func couldn't be found.")
 		return
@@ -215,6 +208,7 @@ func RegisterFunction(functionName, nbArguments, flags = null, documentation = n
 		"NbArgs": nbArguments,
 		"ParseFunc": parseFunc,
 		"ActionFunc": actionFunc,
+		"GizmoFunc": gizmoFunc,
 		"Flags": flags,
 		"Documentation":docs,
 		"Category":currentCategory,
@@ -234,12 +228,16 @@ func RegisterFlag(flagName, documentation = null):
 
 # Registers a configuration option
 func RegisterConfig(keyName, defaultValue, documentation=null):
-	if(documentation == null):
-		documentation = {
-			"Description": ""
-		}
-	documentation["Name"]=keyName
-	moduleDocumentationCategories[currentCategory]["Config"].append(documentation)
+	var docs = {
+		"Description": "",
+		"Flags":[],
+		"Name":keyName,
+	}
+	if(documentation != null):
+		Castagne.FuseDataOverwrite(docs, documentation)
+	docs["Key"]=keyName
+	docs["Default"]=defaultValue
+	moduleDocumentationCategories[currentCategory]["Config"].append(docs)
 	
 	configDefault[keyName] = defaultValue
 
@@ -255,6 +253,7 @@ func RegisterBattleInitData(keyName, defaultValue, documentation=null):
 	battleInitDataDefault[keyName] = defaultValue
 
 
+# :TODO:Panthavma:20220420:Make them actual flags instead of strings, with a more global system
 func HasFlag(eState, flagName):
 	if(eState.has("Flags")):
 		return eState["Flags"].has(flagName)
@@ -281,6 +280,8 @@ func ArgStr(args, eState, argID, default = null):
 			Castagne.Error("ArgRaw ("+argID+"): This argument needs a default but doesn't have one")
 		return default
 	var value = args[argID]
+	if(eState == null):
+		return default
 	if(eState.has(value)):
 		return str(eState[value])
 	return value
@@ -300,6 +301,8 @@ func ArgInt(args, eState, argID, default = null):
 	var value = str(args[argID])
 	if(value.is_valid_integer()):
 		return int(value)
+	if(eState == null):
+		return default
 	if(eState.has(value)):
 		var v = eState[value]
 		return int(v)

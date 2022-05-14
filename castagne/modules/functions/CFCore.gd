@@ -233,6 +233,15 @@ func ModuleSetup():
 	
 	
 	RegisterCategory("Engine Functions")
+	RegisterFunction("Tag", [1], null, {
+		"Description": "Associates a specified tag with the script. These are inherited by the scripts calling this one.",
+		"Arguments": ["Tag Name"],
+	})
+	RegisterFunction("TagLocal", [1], null, {
+		"Description": "Associates a specified tag with the script. These are NOT inherited by the scripts calling this one.",
+		"Arguments": ["Tag Name"],
+	})
+	
 	RegisterFunction("FreezeFrames", [1], null, {
 		"Description": "Sets an amount of freeze frames to be effective immediately. Uses the max of the remaining frames and current frames.",
 		"Arguments": ["Amount of frames to wait"],
@@ -247,6 +256,8 @@ func ModuleSetup():
 	RegisterVariableGlobal("FrameID", 0)
 	RegisterVariableGlobal("TrueFrameID", 0)
 	RegisterVariableGlobal("SkipFrame", false, ["ResetEachFrame"])
+	RegisterVariableGlobal("FrozenFrame", false, ["ResetEachFrame"])
+	RegisterVariableGlobal("SkipFrames", 0)
 	RegisterVariableGlobal("FreezeFrames", 0)
 	
 	RegisterVariableGlobal("CurrentEntityID", 0)
@@ -264,52 +275,64 @@ func ModuleSetup():
 	#RegisterVariableEntity("PID", -1, ["NoInit"])
 	
 	
-	RegisterConfig("Engine", "res://castagne/engine/CastagneEngine.tscn")
-	RegisterConfig("Editor", "res://castagne/editor/CastagneEditor.tscn")
+	RegisterConfig("GameTitle","Untitled Castagne Game")
+	RegisterConfig("GameVersion","Unspecified Version")
+	RegisterConfig("CastagneVersion","Castagne v0.5", {"Flags":["Advanced", "Reload"]})
+	
+	RegisterConfig("Engine", "res://castagne/engine/CastagneEngine.tscn", {"Flags":["Advanced"]})
+	RegisterConfig("Editor", "res://castagne/editor/CastagneEditor.tscn", {"Flags":["Advanced"]})
+	RegisterConfig("DevTools", "res://castagne/devtools/DevTools.tscn", {"Flags":["Advanced"]})
 	RegisterConfig("MainMenu","res://castagne/menus/mainmenu/DefaultMainMenu.tscn")
 	RegisterConfig("CharacterSelect","res://castagne/menus/characterselect/DefaultCharacterSelect.tscn")
 	RegisterConfig("PostBattle","res://castagne/menus/postbattle/DefaultPostBattle.tscn")
 	
-	RegisterConfig("Modules",["default-fg25D"])
-	RegisterConfig("Modules-basic", ["res://castagne/modules/functions/Basic.tscn"])
-	RegisterConfig("Modules-attacks", ["res://castagne/modules/functions/Attacks.tscn"])
-	RegisterConfig("Modules-physics2d", ["res://castagne/modules/functions/Physics.tscn"])
-	RegisterConfig("Modules-graphics25d", ["res://castagne/modules/graphics/CMGraphics2HalfD.tscn"])
-	RegisterConfig("Modules-fightinggame", ["res://castagne/modules/gamemodes/CMFightingGame.tscn"])
-	RegisterConfig("Modules-ui", ["res://castagne/modules/ui/FightingUI.tscn"])
-	
-	RegisterConfig("Modules-25d",["physics2d", "graphics25d"])
-			
-	RegisterConfig("Modules-default-fg25D",["basic", "25d", "attacks", "fightinggame", "ui"])
-	
-	RegisterConfig("CharacterPaths",["res://castagne/example/fighter/Castagneur.casp"])
-	RegisterConfig("StagePaths",["res://castagne/example/stage/Stage.tscn"])
+	RegisterConfig("CharacterPaths","res://castagne/example/fighter/Castagneur.casp")
+	RegisterConfig("StagePaths","res://castagne/example/stage/Stage.tscn")
 	RegisterConfig("InputProviders",{"local":"res://castagne/modules/input/InputLocal.tscn", "online":"res://castagne/modules/input/InputOnline.tscn",
 		"ai":"res://castagne/modules/input/InputAI.tscn", "dummy":"res://castagne/modules/input/InputDummy.tscn",
-		"replay":"res://castagne/modules/input/InputReplay.tscn"})
+		"replay":"res://castagne/modules/input/InputReplay.tscn"}, {"Flags":["Hidden"]})
 	
-	RegisterConfig("GameTitle","Untitled Castagne Game")
-	RegisterConfig("GameVersion","Unspecified Version")
-	RegisterConfig("CastagneVersion","Castagne v0.4")
-	
-	RegisterConfig("Starter-Option", 0)
-	RegisterConfig("Starter-Timer", 2000)
-	RegisterConfig("Starter-P1", 0)
-	RegisterConfig("Starter-P2", 0)
+	RegisterConfig("Skeleton-default", "base")
+	RegisterConfig("Skeleton-base", "res://castagne/Base.casp", {"Flags":["Advanced"]})
 	
 	
 	RegisterBattleInitData("map",0)
 	RegisterBattleInitData("music",0)
 	RegisterBattleInitData("mode","Training")
 	RegisterBattleInitData("online",false)
+	
+	RegisterCategory("Castagne Modules")
+	RegisterConfig("Modules","default-fg25D", {"Flags":["ReloadFull"]})
+	RegisterConfig("Modules-basic", "res://castagne/modules/functions/CFBasic.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-editor", "res://castagne/modules/castagne/CMEditor.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-attacks", "res://castagne/modules/functions/CFAttacks.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-physics2d", "res://castagne/modules/functions/CFPhysics.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-graphics25d", "res://castagne/modules/graphics/CMGraphics2HalfD.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-fightinggame", "res://castagne/modules/gamemodes/CMFightingGame.gd", {"Flags":["Advanced", "ReloadFull"]})
+	RegisterConfig("Modules-ui", "res://castagne/modules/ui/FightingUI.tscn", {"Flags":["Advanced", "ReloadFull"]})
+	
+	RegisterConfig("Modules-25d","physics2d, graphics25d", {"Flags":["Advanced", "ReloadFull"]})
+			
+	RegisterConfig("Modules-default-fg25D","basic, editor, 25d, attacks, fightinggame, ui", {"Flags":["Advanced", "ReloadFull"]})
+	
+	
+	RegisterCategory("Castagne Starter")
+	RegisterConfig("Starter-Option", 0, {"Flags":["Hidden"]})
+	RegisterConfig("Starter-Timer", -1)
+	RegisterConfig("Starter-P1", 0, {"Flags":["Hidden"]})
+	RegisterConfig("Starter-P2", 0, {"Flags":["Hidden"]})
+	
 
 
 
 # :TODO:Panthavma:20220401:Add a way to execute scripts during freeze, another phase?
 func FrameStart(state, _data):
-	if(state["FreezeFrames"] > 0):
-		state["FreezeFrames"] -= 1
+	if(state["SkipFrames"] > 0):
+		state["SkipFrames"] -= 1
 		state["SkipFrame"] = true
+	elif(state["FreezeFrames"] > 0):
+		state["FreezeFrames"] -= 1
+		state["FrozenFrame"] = true
 
 func InitPhaseStartEntity(eState, data):
 	data["State"]["ActiveEntities"].append(eState["EID"])
@@ -550,6 +573,15 @@ func LogB(args, eState, data):
 func LogT(args, eState, data):
 	Log(args, eState, data)
 
+# --------------------------------------------------------------------------------------------------
+# Engine Functions
+
+func ParseTag(parser, args, parseData):
+	parseData["CurrentState"]["Tag"] = args[0]
+	parseData["CurrentState"]["TagLocal"] = false
+func ParseTagLocal(parser, args, parseData):
+	parseData["CurrentState"]["Tag"] = args[0]
+	parseData["CurrentState"]["TagLocal"] = true
 
 func FreezeFrames(args, eState, data):
 	data["State"]["FreezeFrames"] = max(data["State"]["FreezeFrames"], ArgInt(args, eState, 0))
