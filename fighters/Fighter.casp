@@ -1,8 +1,6 @@
 :Character:
 	Name: Empty Fighter
 	
-	Skeleton: res://castagne/Base.casp
-	
 	Model: res://castagne/example/fighter/CastagneurModel.tscn
 	AnimPlayerPath: AnimationPlayer
 	
@@ -11,6 +9,7 @@
 
 
 # The variables block allows us to hold data for later use.
+
 :Variables:
 	# Character Specific
 	HPMax: 10000
@@ -40,3 +39,5 @@
 	ANIM_JUMPF: Air
 	ANIM_JUMPB: Air
 	ANIM_AIRIDLE: Air
+
+
